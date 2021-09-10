@@ -2,6 +2,7 @@ import punycode from 'punycode/';
 
 export class Quarken
 {
+    private max_iteration = 65536;
     private minor_letter = ' abcdefghijklmnopqrstuvwxyz';
     private major_letter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     private alphabet_number = '0123456789'
@@ -12,29 +13,29 @@ export class Quarken
         const min_alphabet = this._get_min_alphabet(text);
         const letter_and_number = this._get_alphabets(min_alphabet);
         const size = this._get_size(letter_and_number);
+        const iteration = this._possible_iteration(size) + 1;
 
         console.log('S: Original: ', text);
         
-        if(text.length % 3 !== 0)
-            text = this._padding(text);
+        if(text.length % iteration !== 0)
+            text = this._padding(text, iteration);
 
         let short = '';
 
-        const chunks = this._chunk(text, 3);
+        const chunks = this._chunk(text, iteration);
 
         if(!chunks)
             throw Error('Unable to perform chunking');
 
+        console.log(this._possible_iteration(size));
         const result = chunks.map((word) => 
         {
-            let n = this._atoi(letter_and_number, word[0]) * Math.pow(size, 2);
-            n += this._atoi(letter_and_number, word[1]) * Math.pow(size, 1);
-            n += this._atoi(letter_and_number, word[2]);
+            const n = this._ratoi(letter_and_number, size, word, this._possible_iteration(size));
 
             return punycode.ucs2.encode([n]);
         });
 
-        short = min_alphabet+result.join('');
+        short = min_alphabet + result.join('');
 
         console.log('S: Shorten:  ', short);
         return short;
@@ -52,17 +53,51 @@ export class Quarken
         const result = this._split_string_by_code_point(text).map((letter) => 
         {
             const [n] = punycode.ucs2.decode(letter);
-            let word = this._itoa(letter_and_number, n % size);
-            let first = Math.floor(n / size);
-            word = this._itoa(letter_and_number, first % size) + word;
-            first = Math.floor(first / size)
-            word = this._itoa(letter_and_number, first % size) + word;
-            first = Math.floor(first / size)
+            const word = this._ritoa(letter_and_number, size, this._possible_iteration(size), Math.floor(n / size), this._itoa(letter_and_number, n % size));
+
             return word;
         });
 
         console.log('U: Original: ', result.join(''));
         return result.join('');
+    }
+
+    private _possible_iteration(size: number, step = 0, accumulator = 0): number
+    {
+        if(!step)
+            return this._possible_iteration(size, 1, size);
+
+        if(accumulator < this.max_iteration)    
+            return this._possible_iteration(size, step + 1, accumulator + Math.pow(size, step));
+        
+        return step - 2;
+    }
+
+    private _ratoi(letter_and_number: string, size: number, word: string, max_iteration: number, iteration = 0, accumulator = 0): number
+    {
+        if(iteration > max_iteration)
+            return accumulator;
+
+        return this._ratoi(
+            letter_and_number, 
+            size, 
+            word, 
+            max_iteration, 
+            iteration + 1, 
+            accumulator + this._atoi(letter_and_number, word[iteration]) * Math.pow(size, max_iteration - iteration)
+        );
+    }
+
+
+    private _ritoa(letter_and_number: string, size: number, iteration: number, first = 0, word = ''): string
+    {
+        if(!iteration)
+            return word;
+
+        word = this._itoa(letter_and_number, first % size) + word;
+        first = Math.floor(first / size)
+
+        return this._ritoa(letter_and_number, size, iteration -1, first, word);
     }
 
     private _atoi(letter_and_number: string, l: string): number
@@ -143,9 +178,9 @@ export class Quarken
         return letter_and_number.length + 1;
     }
 
-    private _padding(s: string): string
+    private _padding(s: string, iteration: number): string
     {
-        while(s.length % 3 !== 0)
+        while(s.length % iteration !== 0)
             s += ' ';
         
         return s;
@@ -153,7 +188,7 @@ export class Quarken
 }
 
 // const q = new Quarken();
-// const short = q.shorten('ciao mamma00');
+// const short = q.shorten('frase molto lunga ma tutta minuscola che pertanto non necessita di trucchi aggiuntivi');
 // q.unshorten(short);
 
 // let z = q.shorten('L1yGVJL/wwlmSm6KFQqCbsL7Uxie7+kkCDOW9qbPPwc!BiD8JuSNpgKn4ayZqd1cvQ');

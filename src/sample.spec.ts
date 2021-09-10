@@ -17,7 +17,7 @@ describe('Quarken', () =>
         const text = 'ciao mamma00';
         const short = quarken.shorten(text);
 
-        expect(quarken.unshorten(short)).toStrictEqual(text);
+        expect(quarken.unshorten(short).trim()).toStrictEqual(text);
     });
 
     it('should shorten and unshorten a list of default string', () =>
@@ -38,6 +38,16 @@ describe('Quarken', () =>
             expect(quarken.unshorten(short).trim()).toStrictEqual(sample);
         }
     });
+
+    it('should rise an exception while shortening for unsupported character', () =>
+    {
+        expect(() => quarken.shorten('çharset not supported')).toThrow();
+    });
+
+    // it('should rise an exception while unshortening for unsupported string encoding', () =>
+    // {
+    //     expect(() => quarken.unshorten('sharset not supported')).toThrow();
+    // });
 
     it('should fuzzy test shorten and unshorten a list of random url', () =>
     {
