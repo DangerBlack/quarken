@@ -1,0 +1,7 @@
+{
+  "name": "quarken",
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "verbose": true,
+  "silent": true
+}
