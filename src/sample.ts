@@ -3,10 +3,11 @@ import punycode from 'punycode/';
 export class Quarken
 {
     private max_iteration = 65536;
-    private minor_letter = ' abcdefghijklmnopqrstuvwxyz';
+    private symbols = ' #%&-./:=?_';
+    private minor_letter = 'abcdefghijklmnopqrstuvwxyz';
     private major_letter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     private alphabet_number = '0123456789'
-    private symbols = '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~';
+    private super_symbols = '!"$\'()*+,;<>@[\\]^`{|}~';
 
     public shorten(text: string): string
     {
@@ -67,7 +68,7 @@ export class Quarken
         if(!step)
             return this._possible_iteration(size, 1, size);
 
-        if(accumulator < this.max_iteration)    
+        if(accumulator * size < this.max_iteration)    
             return this._possible_iteration(size, step + 1, accumulator + Math.pow(size, step));
         
         return step - 2;
@@ -129,28 +130,34 @@ export class Quarken
         const needle = source.split('');
         needle.map(n =>
         {
-            if(this.minor_letter.includes(n))
+            if(this.symbols.includes(n))
                 return;
+
+            if(this.minor_letter.includes(n))
+            {
+                min_alphabet = Math.max(1, min_alphabet);
+                return;
+            }
                 
             if(this.major_letter.includes(n))
             {
-                min_alphabet = Math.max(1, min_alphabet);
+                min_alphabet = Math.max(2, min_alphabet);
                 return;
             }
 
             if(this.alphabet_number.includes(n))
             {
-                min_alphabet = Math.max(2, min_alphabet);
-                return;
-            }
-                
-            if(this.symbols.includes(n))
-            {
                 min_alphabet = Math.max(3, min_alphabet);
                 return;
             }
+                
+            if(this.super_symbols.includes(n))
+            {
+                min_alphabet = Math.max(4, min_alphabet);
+                return;
+            }
             
-            min_alphabet = 4;
+            min_alphabet = 5;
             throw new Error(`Impossible to compress further "${n}"" not in dictionary`);
         });
 
@@ -159,16 +166,19 @@ export class Quarken
 
     private _get_alphabets(min_alphabet: number): string
     {
-        let alphabets = this.minor_letter;
+        let alphabets = this.symbols;
 
         if(min_alphabet >= 1)
-            alphabets += this.major_letter;
+            alphabets += this.minor_letter;
 
         if(min_alphabet >= 2)
-            alphabets += this.alphabet_number;        
+            alphabets += this.major_letter;
 
         if(min_alphabet >= 3)
-            alphabets += this.symbols;
+            alphabets += this.alphabet_number;        
+
+        if(min_alphabet >= 4)
+            alphabets += this.super_symbols;
 
         return alphabets;
     }
@@ -188,7 +198,7 @@ export class Quarken
 }
 
 // const q = new Quarken();
-// const short = q.shorten('frase molto lunga ma tutta minuscola che pertanto non necessita di trucchi aggiuntivi');
+// const short = q.shorten('https://web.cubbit.io/link/#041eac55-5cbd-45ac-a33d-8e5d62d1a9c3!UVvKs13l6L+PbTrbjJEyOadW4AGUIyV4KoLLZwjNrYI!r8aSKBBFpEduRyGZ44J3Cg');
 // q.unshorten(short);
 
 // let z = q.shorten('L1yGVJL/wwlmSm6KFQqCbsL7Uxie7+kkCDOW9qbPPwc!BiD8JuSNpgKn4ayZqd1cvQ');

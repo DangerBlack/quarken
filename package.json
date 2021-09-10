@@ -5,6 +5,7 @@
   "main": "src/sample.ts",
   "scripts": {
     "test": "jest",
+    "build": "tsc",
     "start": "ts-node src/sample.ts"
   },
   "author": "",
