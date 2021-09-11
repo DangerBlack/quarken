@@ -3,11 +3,11 @@ import punycode from 'punycode/';
 export class Quarken
 {
     private max_iteration = 65536;
-    private symbols = ' #%&-./:=?_';
+    private symbols = ' #%&-./:=?_!+';
     private minor_letter = 'abcdefghijklmnopqrstuvwxyz';
     private major_letter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     private alphabet_number = '0123456789'
-    private super_symbols = '!"$\'()*+,;<>@[\\]^`{|}~';
+    private super_symbols = '"$\'()*,;<>@[\\]^`{|}~';
 
     public shorten(text: string): string
     {
