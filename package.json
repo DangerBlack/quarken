@@ -1,7 +1,7 @@
 {
   "name": "quarken",
   "version": "1.0.0",
-  "description": "",
+  "description": "A different approach to url shortener. Zero knowledge, stateless even with coffee machine included. ",
   "main": "src/sample.ts",
   "scripts": {
     "test": "jest",
