@@ -1,12 +1,12 @@
 {
   "name": "quarken",
   "version": "1.0.0",
-  "description": "A different approach to url shortener. Zero knowledge, stateless even with coffee machine included. ",
-  "main": "src/sample.ts",
+  "description": "A different approach to url shortener. Zero knowledge, stateless even with coffee machine included.",
+  "main": "src/quarken.ts",
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "start": "ts-node src/sample.ts"
+    "start": "ts-node src/quarken.ts"
   },
   "author": "",
   "license": "ISC",

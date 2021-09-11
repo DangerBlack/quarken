@@ -1,4 +1,4 @@
-import { Quarken } from "./sample";
+import { Quarken } from "./quarken";
 import faker from 'faker';
 
 describe('Quarken', () =>

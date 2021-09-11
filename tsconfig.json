@@ -26,6 +26,6 @@
         "moduleResolution": "node"
     },
     "files": [
-        "src/sample.ts"
+        "src/quarken.ts"
     ]
 }
